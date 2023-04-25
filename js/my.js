@@ -78,7 +78,7 @@ document.addEventListener("keydown", function (event) { // -------- event ստե
         textGameOver = false
     }
 
-    if(event.code === "ShiftRight") { // թռչունի դիրքը ֆիքսելու համար
+    if(event.code === "ShiftRight") { // -------------------------- թռչունի դիրքը ֆիքսելու համար
 
         if(keyShiftdown) {
             fixBirdPosition = "noFix"
