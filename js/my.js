@@ -34,7 +34,14 @@ let checkPlayOrPauseGame = false
 
 let isLost = false
 
+
+
 let textGameOver = false
+
+let rotate = false
+
+let sign = 1
+
 const date = { // ----------- canvas-ի վրա նկարվող մարմինների տվյալները պահելու համար
     
     floorMoving: [ // ------- հատակի նախնական տվյալները
@@ -62,7 +69,8 @@ const date = { // ----------- canvas-ի վրա նկարվող մարմիններ
     bird: {
             x: 65,
             y: canvas.height / 2 - 100,
-            yDelta: 10, 
+            yDelta: 10,
+            yRotate: 0 
         }
 
 
@@ -76,9 +84,18 @@ document.addEventListener("keydown", function (event) { // -------- event ստե
         isLost = true
 
         textGameOver = false
+
+        rotate = false
+        
+        if(date.bird.yRotate >= 45){ // -------------- պայման, որն ապահովում է Space կոճակը սեղմելիս թռչունի գլուխը վերև բարձրացնելու համար 
+            date.bird.yRotate = 45
+        }else {
+            date.bird.yRotate += 30
+        }
+            sign = -1
     }
 
-    if(event.code === "ShiftRight") { // -------------------------- թռչունի դիրքը ֆիքսելու համար
+    if(event.code === "ShiftRight") { // ------------------------- թռչունի դիրքը ֆիքսելու համար
 
         if(keyShiftdown) {
             fixBirdPosition = "noFix"
@@ -99,11 +116,14 @@ document.addEventListener("keydown", function (event) { // -------- event ստե
             checkPlayOrPauseGame = true
         }
     }
+
 })
 
 document.addEventListener("keyup", function (event) {
     if(event.code === "Space") {
         flyBird = "flyToDown"
+
+        rotate = true
     }
 })
     
@@ -260,16 +280,18 @@ function update () { // ----------------------- function, որն անընդհա�
     }
 
     if(fixBirdPosition === "fix") { // ------ թռիչքի ընթացքում թռչունի դիրքը օդի մեջ ֆիքսելու համար 
-        console.log("fix")
         date.bird.yDelta = 0
+
+        date.bird.yRotate = 0 // --------- RightShift սեղմելուց, երբ թռչունիյ դիրքը ֆիքսվում է օդում, այս կոդը ապահովում է դռչունի հորիզոնական դիրքը
+        
+        rotate = false // սա ապահովում է, որ RightShift սեղմելուց հետո թռչունը գլուխը չկախի
+    
     }else if (fixBirdPosition === "noFix") {
-        console.log("noFix")
         date.bird.yDelta = 10
         fixBirdPosition = null
     }
 
     if(playOrPauseGame === "pauseGame") {  // ----------------------- խաղը պաուզա տալու համար
-        console.log("pauseGame")
         date.bottomPipes.forEach((bottomPapie) => {
             bottomPapie.xDelta = 0
         })
@@ -283,10 +305,11 @@ function update () { // ----------------------- function, որն անընդհա�
         })
 
         date.bird.yDelta = 0
+
+        rotate = false
     
     }else if (playOrPauseGame === "playGame") {
 
-        console.log("playGame")
         date.bottomPipes.forEach((bottomPapie) => {
             bottomPapie.xDelta = 10
         })
@@ -327,8 +350,14 @@ function update () { // ----------------------- function, որն անընդհա�
              upPipe.x -= upPipe.xDelta
          })
 
-   
-    
+    if(date.bird.yRotate <= -90) { // --------------- պայման, որը ապահովում է Space կոճակը բաց թողնելուց հետո թռչունի գլխիվայր իջնելը մինչև 90 աստիճան
+        date.bird.yRotate = -90
+    }else {
+        if(rotate) {
+            date.bird.yRotate -= 10
+        }
+    }
+
     
     if(date.floorMoving[0].x === -canvas.width) { //---------- երբ 1-ին շարժվող հատակի նկարը դուրս է գլիս տեսադաշտից, փոխում ենք նրա x կոորդինատը   
         date.floorMoving[0].x = canvas.width
@@ -376,9 +405,9 @@ function update () { // ----------------------- function, որն անընդհա�
 
          textGameOver = true
 
-        //  setTimeout(() => {
-        //     date.bird.yDelta = 10
-        //  }, 1000)
+         date.bird.yRotate = 0
+
+         rotate = false
 
          setXOfBottomPipes ()
          setXOfUppipes ()
@@ -412,6 +441,10 @@ function update () { // ----------------------- function, որն անընդհա�
              isLost = false
              textGameOver = true
 
+             date.bird.yRotate = 0
+
+             rotate = false
+
           }
 
 
@@ -444,6 +477,10 @@ function update () { // ----------------------- function, որն անընդհա�
 
            isLost = false
            textGameOver = true
+
+           date.bird.yRotate = 0
+
+           rotate = false
         }
   })
 }
@@ -452,7 +489,14 @@ function draw () { // ---------------------------------- function, որը canvas
     
     ctx.drawImage(backGraound, 0, 0, canvas.width, canvas.height) // ----- canvas-ի backgraound-ը նկարելու համար
 
-    ctx.drawImage(birdImg, date.bird.x, date.bird.y) // ------------------ թռչյունին նկարելու համար
+    ctx.save()
+    // ctx.beginPath()
+    ctx.translate(date.bird.x, date.bird.y)
+    ctx.rotate((date.bird.yRotate * sign) * (Math.PI / 180))
+    ctx.drawImage(birdImg, 0, 0) // ------------------ թռչյունին նկարելու համար
+    // ctx.closePath()
+
+    ctx.restore()
 
     date.bottomPipes.forEach((bottomPipe, index) => { // ----------------- ներքևի խողովակները նկարելու համար
         ctx.drawImage(pipeBottom, bottomPipe.x, bottomPipe.y )
