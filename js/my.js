@@ -85,6 +85,8 @@ document.addEventListener("keydown", function (event) { // -------- event ստե
 
         textGameOver = false
 
+        // START commit -> to raise and lower the bird's head
+
         rotate = false
         
         if(date.bird.yRotate >= 45){ // -------------- պայման, որն ապահովում է Space կոճակը սեղմելիս թռչունի գլուխը վերև բարձրացնելու համար 
@@ -93,6 +95,8 @@ document.addEventListener("keydown", function (event) { // -------- event ստե
             date.bird.yRotate += 30
         }
             sign = -1
+
+        // END commit -> to raise and lower the bird's head
     }
 
     if(event.code === "ShiftRight") { // ------------------------- թռչունի դիրքը ֆիքսելու համար
@@ -123,7 +127,11 @@ document.addEventListener("keyup", function (event) {
     if(event.code === "Space") {
         flyBird = "flyToDown"
 
+        // START commit -> to raise and lower the bird's head
+
         rotate = true
+
+       // END commit -> to raise and lower the bird's head
     }
 })
     
@@ -282,9 +290,13 @@ function update () { // ----------------------- function, որն անընդհա�
     if(fixBirdPosition === "fix") { // ------ թռիչքի ընթացքում թռչունի դիրքը օդի մեջ ֆիքսելու համար 
         date.bird.yDelta = 0
 
+        // START commit -> to raise and lower the bird's head
+
         date.bird.yRotate = 0 // --------- RightShift սեղմելուց, երբ թռչունիյ դիրքը ֆիքսվում է օդում, այս կոդը ապահովում է դռչունի հորիզոնական դիրքը
         
         rotate = false // սա ապահովում է, որ RightShift սեղմելուց հետո թռչունը գլուխը չկախի
+
+        // END commit -> to raise and lower the bird's head
     
     }else if (fixBirdPosition === "noFix") {
         date.bird.yDelta = 10
@@ -304,9 +316,13 @@ function update () { // ----------------------- function, որն անընդհա�
             floor.xDelta = 0
         })
 
+        // START commit -> to raise and lower the bird's head
+
         date.bird.yDelta = 0
 
         rotate = false
+
+         // END commit -> to raise and lower the bird's head
     
     }else if (playOrPauseGame === "playGame") {
 
@@ -321,8 +337,6 @@ function update () { // ----------------------- function, որն անընդհա�
         date.floorMoving.forEach((floor) => {
             floor.xDelta = 10
         })
-
-        console.log(isLost)
 
         playOrPauseGame = null
 
@@ -405,9 +419,13 @@ function update () { // ----------------------- function, որն անընդհա�
 
          textGameOver = true
 
+         // START commit -> to raise and lower the bird's head
+
          date.bird.yRotate = 0
 
          rotate = false
+
+         // END commit -> to raise and lower the bird's head
 
          setXOfBottomPipes ()
          setXOfUppipes ()
@@ -441,9 +459,13 @@ function update () { // ----------------------- function, որն անընդհա�
              isLost = false
              textGameOver = true
 
+             // START commit -> to raise and lower the bird's head
+
              date.bird.yRotate = 0
 
              rotate = false
+
+             // END commit -> to raise and lower the bird's head
 
           }
 
@@ -478,9 +500,13 @@ function update () { // ----------------------- function, որն անընդհա�
            isLost = false
            textGameOver = true
 
+           // START commit -> to raise and lower the bird's head
+
            date.bird.yRotate = 0
 
            rotate = false
+
+           // END commit -> to raise and lower the bird's head
         }
   })
 }
@@ -489,14 +515,20 @@ function draw () { // ---------------------------------- function, որը canvas
     
     ctx.drawImage(backGraound, 0, 0, canvas.width, canvas.height) // ----- canvas-ի backgraound-ը նկարելու համար
 
+    // START commit -> to raise and lower the bird's head
+
     ctx.save()
     // ctx.beginPath()
-    ctx.translate(date.bird.x, date.bird.y)
-    ctx.rotate((date.bird.yRotate * sign) * (Math.PI / 180))
+    ctx.translate(date.bird.x, date.bird.y) // --------------------- սա սահմանում է այն կոորդինատները, որի շուրջ տեղի է ունենում թռչունի վերև ներքև պտույտը
+    
+    ctx.rotate((date.bird.yRotate * sign) * (Math.PI / 180)) // ------------------- սա ապահովում է թռչունի պտույտը կախված yRotate փոփոխականի արժեքից, որը Space կոխակը սեղմելիս ավելանում է մինչև, իսկ բաց թողնելիս, պակասում
+    
     ctx.drawImage(birdImg, 0, 0) // ------------------ թռչյունին նկարելու համար
     // ctx.closePath()
 
     ctx.restore()
+
+    // END commit -> to raise and lower the bird's head
 
     date.bottomPipes.forEach((bottomPipe, index) => { // ----------------- ներքևի խողովակները նկարելու համար
         ctx.drawImage(pipeBottom, bottomPipe.x, bottomPipe.y )
